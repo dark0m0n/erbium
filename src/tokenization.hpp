@@ -1,0 +1,77 @@
+#pragma once
+
+enum class TokenType {
+    _return,
+    int_literal,
+    semicolon,
+    exit
+};
+
+struct Token {
+    TokenType type;
+    std::optional<std::string> value;
+};
+
+class Tokenizer {
+public:
+    explicit Tokenizer(const std::string &src)
+        : src(src)
+    {
+    }
+
+    std::vector<Token> tokenize() {
+        std::vector<Token> tokens;
+        std::string buffer;
+        while (peak().has_value()) {
+            if (std::isalpha(*peak())) {
+                buffer.push_back(consume());
+                while (std::isalnum(*peak())) {
+                    buffer.push_back(consume());
+                }
+                if (buffer == "exit") {
+                    tokens.push_back(Token{TokenType::exit});
+                    buffer.clear();
+                } else {
+                    std::cerr << "You messed up!" << std::endl;
+                    exit(EXIT_FAILURE);
+                }
+            }
+            else if (std::isdigit(*peak())) {
+                buffer.push_back(consume());
+                while (std::isdigit(*peak())) {
+                    buffer.push_back(consume());
+                }
+                tokens.push_back(Token{TokenType::int_literal, buffer});
+                buffer.clear();
+            }
+            else if (*peak() == ';') {
+                consume();
+                tokens.push_back(Token{TokenType::semicolon});
+            }
+            else if (std::isspace(*peak())) {
+                consume();
+            }
+            else {
+                std::cerr << "You messed up!" << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
+        index = 0;
+        return tokens;
+    }
+
+private:
+    const std::string src;
+    int index = 0;
+
+    std::optional<char> peak(const int ahead = 1) const {
+        if (index + ahead > src.length()) {
+            return std::nullopt;
+        }
+        return src[index];
+    }
+
+    char consume() {
+        return src[index++];
+    }
+};

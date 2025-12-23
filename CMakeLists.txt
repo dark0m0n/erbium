@@ -3,4 +3,7 @@ project(erbium)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(erbium main.cpp)
+add_executable(erbium src/main.cpp
+        src/tokenization.hpp
+        src/parser.hpp
+        src/generation.hpp)

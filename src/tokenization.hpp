@@ -23,10 +23,10 @@ public:
     std::vector<Token> tokenize() {
         std::vector<Token> tokens;
         std::string buffer;
-        while (peak().has_value()) {
-            if (std::isalpha(*peak())) {
+        while (peek().has_value()) {
+            if (std::isalpha(*peek())) {
                 buffer.push_back(consume());
-                while (std::isalnum(*peak())) {
+                while (std::isalnum(*peek())) {
                     buffer.push_back(consume());
                 }
                 if (buffer == "exit") {
@@ -37,19 +37,19 @@ public:
                     exit(EXIT_FAILURE);
                 }
             }
-            else if (std::isdigit(*peak())) {
+            else if (std::isdigit(*peek())) {
                 buffer.push_back(consume());
-                while (std::isdigit(*peak())) {
+                while (std::isdigit(*peek())) {
                     buffer.push_back(consume());
                 }
                 tokens.push_back(Token{TokenType::int_literal, buffer});
                 buffer.clear();
             }
-            else if (*peak() == ';') {
+            else if (*peek() == ';') {
                 consume();
                 tokens.push_back(Token{TokenType::semicolon});
             }
-            else if (std::isspace(*peak())) {
+            else if (std::isspace(*peek())) {
                 consume();
             }
             else {
@@ -65,7 +65,7 @@ private:
     const std::string src;
     size_t index = 0;
 
-    [[nodiscard]] std::optional<char> peak(const int ahead = 1) const {
+    [[nodiscard]] std::optional<char> peek(const int ahead = 1) const {
         if (index + ahead > src.length()) {
             return std::nullopt;
         }

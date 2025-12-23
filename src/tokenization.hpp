@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 enum class TokenType {
     _return,
     int_literal,
@@ -14,9 +16,8 @@ struct Token {
 
 class Tokenizer {
 public:
-    explicit Tokenizer(const std::string &src)
-        : src(src)
-    {
+    explicit Tokenizer(std::string src)
+            : src(std::move(src)) {
     }
 
     std::vector<Token> tokenize() {
@@ -62,9 +63,9 @@ public:
 
 private:
     const std::string src;
-    int index = 0;
+    size_t index = 0;
 
-    std::optional<char> peak(const int ahead = 1) const {
+    [[nodiscard]] std::optional<char> peak(const int ahead = 1) const {
         if (index + ahead > src.length()) {
             return std::nullopt;
         }
